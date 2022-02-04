@@ -4,7 +4,7 @@ const privateRoute = require("../middlewares/privateRoute");
 
 router.post("/create", privateRoute, async (req, res) => {
   const event = new Event({
-    userId: req.body.userId,
+    owner: req.body.userId,
     title: req.body.title,
     description: req.body.description,
     date: req.body.date,
@@ -33,7 +33,7 @@ router.get("/getAll", privateRoute, async (req, res) => {
 router.get("/getAll/:userId", privateRoute, async (req, res) => {
   try {
     const allEvents = await Event.find({
-      userId: req.params.userId,
+      owner: req.params.userId,
     });
     res.status(200).send(allEvents);
   } catch (err) {
