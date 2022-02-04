@@ -9,6 +9,8 @@ const app = express();
 // dotenv config
 dotenv.config();
 
+const PORT = process.env.PORT || 8000;
+
 // connecting to database
 mongoose.connect(
   process.env.DATABASE_CONNECTION,
@@ -24,4 +26,4 @@ app.use(express.json());
 // route middlewares
 app.use("/api", authRoutes);
 
-app.listen(5000, () => console.log("App Runnig on port 5000"));
+app.listen(PORT, () => console.log("App Runnig on port 5000"));

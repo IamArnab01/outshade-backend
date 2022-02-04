@@ -3,7 +3,7 @@ const dotenv = require("dotenv");
 dotenv.config();
 
 module.exports = (req, res, next) => {
-  const token = req.header("jwtToken");
+  const token = req.header("Bearer");
   // const token = req.headers.authorization.split(" ")[1];
   if (!token) return res.status(401).send("Unauthorized access!");
   try {
