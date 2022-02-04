@@ -1,6 +1,7 @@
 const router = require("express").Router();
 const Event = require("../models/event");
 const privateRoute = require("../middlewares/privateRoute");
+const APIFeatures = require("../utils/apiFeatures");
 
 router.post("/create", privateRoute, async (req, res) => {
   const event = new Event({
@@ -21,9 +22,18 @@ router.post("/create", privateRoute, async (req, res) => {
 
 // get all events
 router.get("/getAll", privateRoute, async (req, res) => {
+  const featuredData = new APIFeatures(Event, req.query)
+    .filter()
+    .sort()
+    .paginate();
+
   try {
-    const allEvents = await Event.find();
-    res.status(200).send(allEvents);
+    const data = await featuredData.query;
+    res.status(200).json({
+      status: 200,
+      results: data.length,
+      data,
+    });
   } catch (err) {
     res.status(400).send(err);
   }

@@ -2,6 +2,7 @@ const router = require("express").Router();
 const EventInvitation = require("../models/invite");
 const Event = require("../models/event");
 const privateRoute = require("../middlewares/privateRoute");
+const APIFeatures = require("../utils/apiFeatures");
 
 router.post("/invite/:eventId", privateRoute, async (req, res) => {
   const event = await Event.findById({
@@ -34,14 +35,22 @@ router.post("/invite/:eventId", privateRoute, async (req, res) => {
 });
 
 // get individual users invitation list
-router.get("/invitation/list/:userId", async (req, res) => {
+// filter() query ->
+// api?invitee = user_id -> this for all the invites the logged in user got by other users
+// api?sender = user_id -> this for all the invites the made by the logged in user for other users
+router.get("/invitation/list", async (req, res) => {
+  const featuredData = new APIFeatures(EventInvitation, req.query)
+    .filter()
+    .sort()
+    .paginate();
+
   try {
-    const myAllInvitations = await EventInvitation.find({
-      invitee: req.params.userId,
+    const data = await featuredData.query;
+    res.status(200).json({
+      status: 200,
+      results: data.length,
+      data,
     });
-    // if user doesnot have any invitation
-    if (!myAllInvitations) res.json("No invitation found for the user.");
-    res.status(200).send(myAllInvitations);
   } catch (err) {
     res.status(400).send(err);
   }
