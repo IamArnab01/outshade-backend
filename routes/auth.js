@@ -54,7 +54,7 @@ router.post("/login", async (req, res, next) => {
   res.header("Bearer", token).send({ token: token, usre: user });
 });
 
-router.post("/password/reset", privateRoute, async (req, res, next) => {
+router.post("/password/reset", async (req, res, next) => {
   const user = await User.findOne({ email: req.body.email });
   if (!user) return res.status(400).send("User does not exists!");
   let token = await Token.findOne({ userId: user._id });
@@ -77,11 +77,11 @@ router.post("/password/reset", privateRoute, async (req, res, next) => {
   res.json(link);
 });
 
-router.post("/password/update", privateRoute, async (req, res, next) => {
+router.post("/password/update", async (req, res, next) => {
   let passwordResetToken = await Token.findOne({ userId: req.body.userId });
 
   if (!passwordResetToken) {
-    throw res.status(400).send("Invalid or expired token");
+    return res.status(400).send("Invalid or expired token");
   }
 
   const isValid = await bcrypt.compare(
@@ -90,7 +90,7 @@ router.post("/password/update", privateRoute, async (req, res, next) => {
   );
 
   if (!isValid) {
-    throw res.status(400).send("Invalid or expired token");
+    return res.status(400).send("Invalid or expired token");
   }
 
   const salt = await bcrypt.genSalt(10);
@@ -107,6 +107,33 @@ router.post("/password/update", privateRoute, async (req, res, next) => {
   await passwordResetToken.deleteOne();
 
   res.status(200).send("Password Upadted Successfully");
+});
+
+// change password route
+router.patch("/password/change", privateRoute, async (req, res, next) => {
+  const { oldPassword, newPassword, userId } = req.body;
+  const user = await User.findOne({ _id: userId });
+
+  const isPassValid = await bcrypt.compare(oldPassword, user.password);
+
+  if (!isPassValid) {
+    return res.status(400).send("Invalid input");
+  }
+
+  const salt = await bcrypt.genSalt(10);
+  const hash = await bcrypt.hash(newPassword, salt);
+
+  // changing user password
+  try {
+    await User.findOneAndUpdate(
+      { _id: userId },
+      { $set: { password: hash } },
+      { new: true }
+    );
+    res.status(200).send("Password Upadted Successfully");
+  } catch (error) {
+    res.status(400).send(error);
+  }
 });
 
 module.exports = router;
