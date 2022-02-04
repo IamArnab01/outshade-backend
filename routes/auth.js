@@ -48,10 +48,10 @@ router.post("/login", async (req, res, next) => {
   }
   // generating jwt token adding to auth header
   const token = jwt.sign(
-    { _id: user._id, email: user.email },
+    { _id: user._id, email: user.email, name: user.name },
     process.env.JWT_SECRET_TOKEN
   );
-  res.header("Bearer", token).send({ token: token, usre: user });
+  res.header("Bearer", token).send({ token: token, user: user });
 });
 
 router.post("/password/reset", async (req, res, next) => {
