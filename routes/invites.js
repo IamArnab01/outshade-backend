@@ -71,6 +71,7 @@ router.patch("/invititaion/:inviteId", privateRoute, async (req, res) => {
       },
       { new: true }
     );
+    // console.log(updatedInvite);
     res.status(200).json({ message: req.body.message, updatedInvite });
   } catch (err) {
     res.status(500).send(err.message);
