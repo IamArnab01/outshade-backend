@@ -4,8 +4,9 @@ const privateRoute = require("../middlewares/privateRoute");
 const APIFeatures = require("../utils/apiFeatures");
 
 router.post("/create", privateRoute, async (req, res) => {
+  console.log(req.body);
   const event = new Event({
-    owner: req.body.userId,
+    owner: req.body.owner,
     title: req.body.title,
     description: req.body.description,
     date: req.body.date,
@@ -14,6 +15,7 @@ router.post("/create", privateRoute, async (req, res) => {
 
   try {
     const _event = await event.save();
+    // console.log(_event);
     res.status(201).send(_event);
   } catch (err) {
     res.status(400).send(err);
