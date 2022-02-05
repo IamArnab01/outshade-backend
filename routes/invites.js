@@ -4,9 +4,9 @@ const Event = require("../models/event");
 const privateRoute = require("../middlewares/privateRoute");
 const APIFeatures = require("../utils/apiFeatures");
 
-router.post("/invite/:eventId", privateRoute, async (req, res) => {
+router.post("/invite", privateRoute, async (req, res) => {
   const event = await Event.findById({
-    _id: req.params.eventId,
+    _id: req.body.eventId,
   });
 
   const new_event = {
@@ -57,7 +57,7 @@ router.get("/invitation/list", async (req, res) => {
 });
 
 // updating my(logged in user's) invitation status -> accepted(false)/rejected(false)/pending(true)
-router.patch("/invititaion/:inviteId", privateRoute, async (req, res) => {
+router.patch("/invitation/:inviteId", privateRoute, async (req, res) => {
   try {
     const updatedInvite = await EventInvitation.findOneAndUpdate(
       {

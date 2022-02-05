@@ -55,6 +55,19 @@ router.post("/login", async (req, res, next) => {
   res.header("Bearer", token).send({ token: token, user: user });
 });
 
+router.get("/getAllUser/:userId", privateRoute, async (req, res, next) => {
+  // getting users from db
+  const user_id = req.params.userId;
+  try {
+    const users = await User.find();
+    const data = users.filter((item) => item._id != user_id);
+    // console.log(data);
+    res.status(200).json(data);
+  } catch (err) {
+    res.status(400).send(err);
+  }
+});
+
 router.post("/password/reset", async (req, res, next) => {
   const user = await User.findOne({ email: req.body.email });
   if (!user) return res.status(400).send("User does not exists!");
