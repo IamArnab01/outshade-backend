@@ -70,11 +70,12 @@ router.post("/password/reset", async (req, res, next) => {
     createdAt: Date.now(),
   }).save();
 
-  const link = {
-    passwordResetLink: `${process.env.clientURL}/reset/password?token=${resetToken}&id=${user._id}`,
+  const resetData = {
+    token: resetToken,
+    user: user._id,
   };
 
-  res.json(link);
+  res.status(200).json(resetData);
 });
 
 router.post("/password/update", async (req, res, next) => {
@@ -130,7 +131,7 @@ router.patch("/password/change", privateRoute, async (req, res, next) => {
       { $set: { password: hash } },
       { new: true }
     );
-    res.status(200).send("Password Upadted Successfully");
+    res.status(200).send("Password Changed Successfully");
   } catch (error) {
     res.status(400).send(error);
   }
